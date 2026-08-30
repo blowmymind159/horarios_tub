@@ -104,7 +104,7 @@ DADOS = [
 ]
 
 # ============================================
-# NOMES DAS LINHAS
+# NOMES COMPLETOS DAS LINHAS
 # ============================================
 NOMES_LINHAS = {
     "212": "Braga - Barcelos (por Martim)",
@@ -112,6 +112,22 @@ NOMES_LINHAS = {
     "214": "Braga - Barcelos IPCA (por A11)",
     "215": "Barcelos - Apúlia (por Esposende)",
     "216": "Barcelos - Esposende (por Vila Seca)"
+}
+
+# ============================================
+# DESCRIÇÕES DOS TIPOS DE DIA
+# ============================================
+DESCRICOES_TIPOS_DIA = {
+    "A-U": "Anual - Dias Úteis",
+    "A-S": "Anual - Sábados",
+    "A-DF": "Anual - Domingos e Feriados",
+    "E-U": "Escolar - Dias Úteis",
+    "FE-U": "Férias Escolares - Dias Úteis",
+    "EUI-U": "IPCA - Época Escolar",
+    "EXI-U": "IPCA - Época de Exames",
+    "PPI-U": "IPCA - Pausa Letiva",
+    "AXI-S": "IPCA - Sábados",
+    "E-2356": "Escolar - Seg/Ter/Qui/Sex"
 }
 
 # ============================================
@@ -172,7 +188,7 @@ def get_horarios(linha, paragem, direcao, tipo_dia, hora_atual):
 # ============================================
 st.set_page_config(page_title="Horários TUB", page_icon="🚌", layout="wide")
 
-st.title("🚌 Consulta de Horários TUB")
+st.title(" Consulta de Horários TUB")
 st.markdown("Linhas **212, 213, 214, 215 e 216**")
 
 # Sidebar
@@ -184,7 +200,20 @@ st.sidebar.info(f"🕒 Hora atual: **{hora_atual}**")
 
 # Filtros
 linhas = get_linhas()
-linha_sel = st.sidebar.selectbox("1. Linha:", ["Todas"] + linhas)
+
+# Criar lista de linhas com nomes completos
+opcoes_linhas = ["Todas"]
+for linha in linhas:
+    nome_completo = NOMES_LINHAS.get(linha, linha)
+    opcoes_linhas.append(f"{linha} - {nome_completo}")
+
+linha_sel_display = st.sidebar.selectbox("1. Linha:", opcoes_linhas)
+
+# Extrair código da linha selecionada
+if linha_sel_display == "Todas":
+    linha_sel = "Todas"
+else:
+    linha_sel = linha_sel_display.split(" - ")[0]
 
 paragens = get_paragens(linha_sel)
 paragem_sel = st.sidebar.selectbox("2. Paragem:", paragens)
@@ -193,7 +222,17 @@ direcoes = get_direcoes(linha_sel, paragem_sel)
 direcao_sel = st.sidebar.selectbox("3. Direção:", direcoes)
 
 tipos_dia = get_tipos_dia(linha_sel, paragem_sel, direcao_sel)
-tipo_dia_sel = st.sidebar.selectbox("4. Tipo de Dia:", tipos_dia)
+
+# Criar lista de tipos de dia com descrições completas
+opcoes_tipos_dia = []
+for tipo in tipos_dia:
+    descricao = DESCRICOES_TIPOS_DIA.get(tipo, tipo)
+    opcoes_tipos_dia.append(f"{tipo} - {descricao}")
+
+tipo_dia_sel_display = st.sidebar.selectbox("4. Tipo de Dia:", opcoes_tipos_dia)
+
+# Extrair código do tipo de dia selecionado
+tipo_dia_sel = tipo_dia_sel_display.split(" - ")[0]
 
 st.sidebar.markdown("---")
 st.sidebar.caption("📅 Dados de 28/07/2026")
@@ -217,7 +256,7 @@ if resultados:
     
     st.table(dados_tabela)
 else:
-    st.warning(f"⚠️ Não há mais passagens hoje para {paragem_sel} ({tipo_dia_sel}) a partir das {hora_atual}.")
+    st.warning(f"️ Não há mais passagens hoje para {paragem_sel} ({tipo_dia_sel_display}) a partir das {hora_atual}.")
 
 st.markdown("---")
 st.caption("⚠️ Chegue às paragens com 10 minutos de antecedência. Podem ocorrer alterações devido a acidentes, obras ou outros fatores.")
