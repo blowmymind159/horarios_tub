@@ -2,10 +2,10 @@ import streamlit as st
 from datetime import datetime
 
 # ============================================
-# DADOS EMBUTIDOS (extraídos dos PDFs)
+# DADOS EMBUTIDOS
 # ============================================
 DADOS = [
-    # LINHA 212 - Braga-Barcelos por Martim
+    # LINHA 212
     ("212", "Braga(Central)", "IDA", "A-U", ["06:30","07:05","08:30","09:30","10:30","14:20","17:30","18:15","19:20"]),
     ("212", "Braga(Bairro de Baixo)", "IDA", "A-U", ["06:39","07:14","08:39","09:39","10:39","14:29","17:39","18:24","19:29"]),
     ("212", "Martim(Pousada)", "IDA", "A-U", ["06:49","07:24","08:49","09:49","10:49","14:39","17:49","18:34","19:39"]),
@@ -38,7 +38,7 @@ DADOS = [
     ("212", "Barcelos(Central)", "VOLTA", "A-DF", ["10:35","12:00","18:30"]),
     ("212", "Braga(Central)", "VOLTA", "A-DF", ["11:25","12:50","19:20"]),
     
-    # LINHA 213 - Braga-Barcelos por Prado
+    # LINHA 213
     ("213", "Braga(Central)", "IDA", "A-U", ["06:30","07:00","08:00","09:00","10:00","11:15","12:15","13:05","14:05","15:05","16:05","17:10","18:10","19:10"]),
     ("213", "Merelim São Paio(Ponte)", "IDA", "A-U", ["06:47","07:17","08:17","09:17","10:17","11:32","12:32","13:22","14:22","15:22","16:22","17:27","18:27","19:27"]),
     ("213", "Prado(Bom Sucesso)", "IDA", "A-U", ["06:48","07:18","08:18","09:18","10:18","11:33","12:33","13:23","14:23","15:23","16:23","17:28","18:28","19:28"]),
@@ -68,14 +68,14 @@ DADOS = [
     ("213", "Barcelos(Central)", "VOLTA", "A-DF", ["13:50","17:00","19:00"]),
     ("213", "Braga(Central)", "VOLTA", "A-DF", ["14:40","17:50","19:50"]),
     
-    # LINHA 214 - Braga-Barcelos IPCA por A11
+    # LINHA 214
     ("214", "Braga(Central)", "IDA", "EUI-U", ["08:25","09:00","10:30","13:35","16:35","17:20","17:55","19:00","21:30","22:30"]),
     ("214", "Barcelos(IPCA)", "IDA", "EUI-U", ["09:00","09:30","11:00","14:00","17:05","17:50","18:25","19:30","21:55","22:55"]),
     
     ("214", "Barcelos(IPCA)", "VOLTA", "EUI-U", ["08:10","09:00","12:45","13:05","16:05","17:05","17:35","18:05","18:30","20:30","22:00","22:55"]),
     ("214", "Braga(Central)", "VOLTA", "EUI-U", ["09:00","09:50","13:35","16:35","17:50","18:35","19:00","21:00","22:30","23:20"]),
     
-    # LINHA 215 - Barcelos-Apúlia por Esposende
+    # LINHA 215
     ("215", "Barcelos(Central)", "IDA", "A-U", ["08:15","10:30","12:00","13:35","16:30","17:50","18:35","19:15","19:45"]),
     ("215", "Esposende(Central)", "IDA", "A-U", ["07:30","08:48","11:03","12:33","14:08","17:03","18:23","19:08","19:48","20:15"]),
     ("215", "Apúlia(Praia)", "IDA", "A-U", ["07:52","09:10","11:25","12:55","14:30","17:25","18:45","19:30","20:10"]),
@@ -90,7 +90,7 @@ DADOS = [
     ("215", "Apúlia(Praia)", "VOLTA", "A-S", ["11:42","17:31"]),
     ("215", "Barcelos(Central)", "VOLTA", "A-S", ["08:45","12:26","18:15"]),
     
-    # LINHA 216 - Barcelos-Esposende por Vila Seca
+    # LINHA 216
     ("216", "Barcelos(Central)", "IDA", "A-U", ["11:30","13:30","19:00"]),
     ("216", "Esposende(Central)", "IDA", "A-U", ["12:20","14:20","19:50"]),
     
@@ -104,7 +104,7 @@ DADOS = [
 ]
 
 # ============================================
-# NOMES COMPLETOS DAS LINHAS
+# NOMES E DESCRIÇÕES
 # ============================================
 NOMES_LINHAS = {
     "212": "Braga - Barcelos (por Martim)",
@@ -114,15 +114,12 @@ NOMES_LINHAS = {
     "216": "Barcelos - Esposende (por Vila Seca)"
 }
 
-# ============================================
-# DESCRIÇÕES DOS TIPOS DE DIA
-# ============================================
 DESCRICOES_TIPOS_DIA = {
-    "A-U": "Anual - Dias Úteis",
-    "A-S": "Anual - Sábados",
-    "A-DF": "Anual - Domingos e Feriados",
+    "A-U": "Dias Úteis",
+    "A-S": "Sábados",
+    "A-DF": "Domingos e Feriados",
     "E-U": "Escolar - Dias Úteis",
-    "FE-U": "Férias Escolares - Dias Úteis",
+    "FE-U": "Férias Escolares",
     "EUI-U": "IPCA - Época Escolar",
     "EXI-U": "IPCA - Época de Exames",
     "PPI-U": "IPCA - Pausa Letiva",
@@ -136,23 +133,20 @@ DESCRICOES_TIPOS_DIA = {
 def get_linhas():
     return sorted(list(set([d[0] for d in DADOS])))
 
-def get_paragens(linha):
-    if linha == "Todas":
-        paragens = sorted(list(set([d[1] for d in DADOS])))
-    else:
+def get_paragens(linha, direcao):
+    if direcao == "Ambas":
         paragens = sorted(list(set([d[1] for d in DADOS if d[0] == linha])))
+    else:
+        paragens = sorted(list(set([d[1] for d in DADOS if d[0] == linha and d[2] == direcao])))
     return paragens
 
-def get_direcoes(linha, paragem):
-    if linha == "Todas":
-        direcoes = sorted(list(set([d[2] for d in DADOS if d[1] == paragem])))
-    else:
-        direcoes = sorted(list(set([d[2] for d in DADOS if d[0] == linha and d[1] == paragem])))
+def get_direcoes(linha):
+    direcoes = sorted(list(set([d[2] for d in DADOS if d[0] == linha])))
     return direcoes
 
 def get_tipos_dia(linha, paragem, direcao):
-    if linha == "Todas":
-        tipos = sorted(list(set([d[3] for d in DADOS if d[1] == paragem and d[2] == direcao])))
+    if direcao == "Ambas":
+        tipos = sorted(list(set([d[3] for d in DADOS if d[0] == linha and d[1] == paragem])))
     else:
         tipos = sorted(list(set([d[3] for d in DADOS if d[0] == linha and d[1] == paragem and d[2] == direcao])))
     return tipos
@@ -160,16 +154,15 @@ def get_tipos_dia(linha, paragem, direcao):
 def get_horarios(linha, paragem, direcao, tipo_dia, hora_atual):
     resultados = []
     for d in DADOS:
-        if linha != "Todas" and d[0] != linha:
+        if d[0] != linha:
             continue
         if d[1] != paragem:
             continue
-        if d[2] != direcao:
+        if direcao != "Ambas" and d[2] != direcao:
             continue
         if d[3] != tipo_dia:
             continue
         
-        # Filtrar apenas horários >= hora_atual
         horarios_filtrados = [h for h in d[4] if h >= hora_atual]
         
         if horarios_filtrados:
@@ -188,75 +181,222 @@ def get_horarios(linha, paragem, direcao, tipo_dia, hora_atual):
 # ============================================
 st.set_page_config(page_title="Horários TUB", page_icon="🚌", layout="wide")
 
-st.title(" Consulta de Horários TUB")
-st.markdown("Linhas **212, 213, 214, 215 e 216**")
+# CSS personalizado para melhor aparência
+st.markdown("""
+<style>
+    .main-header {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #1f77b4;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    .sub-header {
+        font-size: 1.2rem;
+        color: #666;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .line-card {
+        padding: 1.5rem;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    .line-card:hover {
+        transform: translateY(-5px);
+    }
+    .line-number {
+        font-size: 2rem;
+        font-weight: bold;
+    }
+    .line-name {
+        font-size: 1.1rem;
+        margin-top: 0.5rem;
+    }
+    .info-box {
+        padding: 1rem;
+        border-radius: 8px;
+        background-color: #f0f2f6;
+        margin-bottom: 1rem;
+    }
+    .schedule-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .schedule-table th {
+        background-color: #1f77b4;
+        color: white;
+        padding: 12px;
+        text-align: left;
+    }
+    .schedule-table td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+    .schedule-table tr:hover {
+        background-color: #f5f5f5;
+    }
+</style>
+""", unsafe_allow_html=True)
 
-# Sidebar
-st.sidebar.header("🔍 Filtros")
+# Cabeçalho
+st.markdown('<div class="main-header">🚌 Horários TUB</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-header">Consulta rápida de horários das linhas 212, 213, 214, 215 e 216</div>', unsafe_allow_html=True)
 
+# Mostrar hora atual
 agora = datetime.now()
 hora_atual = agora.strftime("%H:%M")
-st.sidebar.info(f"🕒 Hora atual: **{hora_atual}**")
-
-# Filtros
-linhas = get_linhas()
-
-# Criar lista de linhas com nomes completos
-opcoes_linhas = ["Todas"]
-for linha in linhas:
-    nome_completo = NOMES_LINHAS.get(linha, linha)
-    opcoes_linhas.append(f"{linha} - {nome_completo}")
-
-linha_sel_display = st.sidebar.selectbox("1. Linha:", opcoes_linhas)
-
-# Extrair código da linha selecionada
-if linha_sel_display == "Todas":
-    linha_sel = "Todas"
-else:
-    linha_sel = linha_sel_display.split(" - ")[0]
-
-paragens = get_paragens(linha_sel)
-paragem_sel = st.sidebar.selectbox("2. Paragem:", paragens)
-
-direcoes = get_direcoes(linha_sel, paragem_sel)
-direcao_sel = st.sidebar.selectbox("3. Direção:", direcoes)
-
-tipos_dia = get_tipos_dia(linha_sel, paragem_sel, direcao_sel)
-
-# Criar lista de tipos de dia com descrições completas
-opcoes_tipos_dia = []
-for tipo in tipos_dia:
-    descricao = DESCRICOES_TIPOS_DIA.get(tipo, tipo)
-    opcoes_tipos_dia.append(f"{tipo} - {descricao}")
-
-tipo_dia_sel_display = st.sidebar.selectbox("4. Tipo de Dia:", opcoes_tipos_dia)
-
-# Extrair código do tipo de dia selecionado
-tipo_dia_sel = tipo_dia_sel_display.split(" - ")[0]
-
-st.sidebar.markdown("---")
-st.sidebar.caption("📅 Dados de 28/07/2026")
-
-# Resultados
-st.subheader(f"📍 {paragem_sel} ({direcao_sel})")
-
-resultados = get_horarios(linha_sel, paragem_sel, direcao_sel, tipo_dia_sel, hora_atual)
-
-if resultados:
-    st.success(f"✅ Próximas passagens a partir das {hora_atual}:")
-    
-    dados_tabela = []
-    for r in resultados:
-        nome_linha = NOMES_LINHAS.get(r["linha"], r["linha"])
-        for hora in r["horarios"][:10]:  # Mostrar até 10 horários
-            dados_tabela.append({
-                "Linha": f"{r['linha']} - {nome_linha}",
-                "Hora": hora
-            })
-    
-    st.table(dados_tabela)
-else:
-    st.warning(f"️ Não há mais passagens hoje para {paragem_sel} ({tipo_dia_sel_display}) a partir das {hora_atual}.")
+st.info(f" Hora atual: **{hora_atual}** | 📅 {agora.strftime('%d/%m/%Y')} ({['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'][agora.weekday()]})")
 
 st.markdown("---")
-st.caption("⚠️ Chegue às paragens com 10 minutos de antecedência. Podem ocorrer alterações devido a acidentes, obras ou outros fatores.")
+
+# ============================================
+# SELEÇÃO DE LINHA (CARDS VISUAIS)
+# ============================================
+st.subheader(" Escolha a linha que pretende consultar:")
+
+linhas = get_linhas()
+
+# Criar cards para cada linha
+cols = st.columns(2)
+for idx, linha in enumerate(linhas):
+    with cols[idx % 2]:
+        nome_completo = NOMES_LINHAS.get(linha, linha)
+        
+        # Card da linha
+        st.markdown(f"""
+        <div style="padding: 1.5rem; border-radius: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-bottom: 1rem;">
+            <div style="font-size: 2rem; font-weight: bold;">Linha {linha}</div>
+            <div style="font-size: 1.1rem; margin-top: 0.5rem;">{nome_completo}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+# Seleção de linha
+linha_sel = st.selectbox(
+    "👇 Selecione a linha:",
+    [f"{linha} - {NOMES_LINHAS.get(linha, '')}" for linha in linhas],
+    format_func=lambda x: x
+)
+
+if linha_sel:
+    linha_codigo = linha_sel.split(" - ")[0]
+    
+    st.markdown("---")
+    
+    # ============================================
+    # SELEÇÃO DE DIREÇÃO
+    # ============================================
+    st.subheader(f"🧭 Linha {linha_codigo} - Escolha a direção:")
+    
+    direcoes = get_direcoes(linha_codigo)
+    
+    # Mostrar opções de direção
+    for direcao in direcoes:
+        emoji = "➡️" if direcao == "IDA" else "⬅️"
+        st.markdown(f"**{emoji} {direcao}**")
+    
+    direcao_sel = st.selectbox(
+        "Selecione a direção:",
+        ["Ambas"] + direcoes,
+        format_func=lambda x: f"{x} (mostrar todas as direções)" if x == "Ambas" else x
+    )
+    
+    st.markdown("---")
+    
+    # ============================================
+    # SELEÇÃO DE PARAGEM
+    # ============================================
+    st.subheader(f"📍 Escolha a paragem:")
+    
+    paragens = get_paragens(linha_codigo, direcao_sel)
+    
+    paragem_sel = st.selectbox(
+        "Selecione a paragem:",
+        paragens,
+        format_func=lambda x: x
+    )
+    
+    st.markdown("---")
+    
+    # ============================================
+    # SELEÇÃO DE TIPO DE DIA
+    # ============================================
+    st.subheader(f" Tipo de dia:")
+    
+    tipos_dia = get_tipos_dia(linha_codigo, paragem_sel, direcao_sel)
+    
+    # Criar opções com descrições
+    opcoes_tipos = []
+    for tipo in tipos_dia:
+        descricao = DESCRICOES_TIPOS_DIA.get(tipo, tipo)
+        opcoes_tipos.append(f"{tipo} - {descricao}")
+    
+    tipo_dia_sel_display = st.selectbox(
+        "Selecione o tipo de dia:",
+        opcoes_tipos,
+        format_func=lambda x: x
+    )
+    
+    tipo_dia_codigo = tipo_dia_sel_display.split(" - ")[0]
+    
+    st.markdown("---")
+    
+    # ============================================
+    # MOSTRAR HORÁRIOS
+    # ============================================
+    st.subheader(f"🕐 Horários para {paragem_sel}")
+    
+    # Mostrar informações da pesquisa
+    st.markdown(f"""
+    <div class="info-box">
+        <strong>🚌 Linha:</strong> {linha_codigo} - {NOMES_LINHAS.get(linha_codigo, '')}<br>
+        <strong>📍 Paragem:</strong> {paragem_sel}<br>
+        <strong>🧭 Direção:</strong> {direcao_sel}<br>
+        <strong>📅 Tipo de dia:</strong> {tipo_dia_sel_display}<br>
+        <strong>🕒 Hora atual:</strong> {hora_atual}
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Obter horários
+    resultados = get_horarios(linha_codigo, paragem_sel, direcao_sel, tipo_dia_codigo, hora_atual)
+    
+    if resultados:
+        st.success(f"✅ Encontrados {len(resultados)} horários a partir das {hora_atual}")
+        
+        # Criar tabela de horários
+        dados_tabela = []
+        for r in resultados:
+            for hora in r["horarios"]:
+                dados_tabela.append({
+                    "🚌 Linha": f"{r['linha']} - {NOMES_LINHAS.get(r['linha'], '')}",
+                    " Direção": r["direcao"],
+                    "🕐 Hora": hora
+                })
+        
+        st.table(dados_tabela)
+        
+        # Mostrar próximos 3 horários em destaque
+        if len(dados_tabela) >= 3:
+            st.markdown("### 🎯 Próximas 3 passagens:")
+            for i in range(min(3, len(dados_tabela))):
+                st.markdown(f"**{i+1}.** {dados_tabela[i]['🕐 Hora']} - {dados_tabela[i]['🚌 Linha']} ({dados_tabela[i]['🧭 Direção']})")
+    else:
+        st.warning(f"⚠️ Não há mais passagens hoje para {paragem_sel} ({tipo_dia_sel_display}) a partir das {hora_atual}.")
+        st.info("💡 Tente consultar outro tipo de dia ou outra paragem.")
+
+# ============================================
+# RODAPÉ
+# ============================================
+st.markdown("---")
+st.markdown("""
+<div style="text-align: center; padding: 1rem; background-color: #f0f2f6; border-radius: 8px;">
+    <strong>⚠️ Informação importante:</strong><br>
+    Chegue às paragens com <strong>10 minutos de antecedência</strong>.<br>
+    Podem ocorrer alterações devido a acidentes, obras ou outros fatores inesperados.<br><br>
+    <em>📅 Dados atualizados em 28/07/2026</em>
+</div>
+""", unsafe_allow_html=True)
