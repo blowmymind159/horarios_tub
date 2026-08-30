@@ -83,9 +83,6 @@ DADOS = [
     ("216", "Esposende(Central)", "VOLTA", "A-S", ["19:15"]),
 ]
 
-# ============================================
-# NOMES E DESCRIÇÕES
-# ============================================
 NOMES_LINHAS = {
     "212": "Braga - Barcelos (por Martim)",
     "213": "Braga - Barcelos (por Prado)",
@@ -106,9 +103,6 @@ DESCRICOES_TIPOS_DIA = {
     "AXI-S": "IPCA - Sábados"
 }
 
-# ============================================
-# FUNÇÕES
-# ============================================
 def get_linhas():
     return sorted(list(set([d[0] for d in DADOS])))
 
@@ -155,66 +149,19 @@ def get_horarios(linha, paragem, direcao, tipo_dia, hora_atual):
     
     return resultados
 
-# ============================================
 # INTERFACE
-# ============================================
-st.set_page_config(page_title="Horários TUB", page_icon="", layout="wide")
+st.set_page_config(page_title="Horários TUB", page_icon="🚌", layout="wide")
 
-# CSS
-st.markdown("""
-<style>
-    .main-header {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: #1f77b4;
-        text-align: center;
-        margin-bottom: 0.5rem;
-    }
-    .sub-header {
-        font-size: 1.1rem;
-        color: #666;
-        text-align: center;
-        margin-bottom: 1.5rem;
-    }
-    .info-box {
-        padding: 1rem;
-        border-radius: 8px;
-        background-color: #f0f2f6;
-        margin-bottom: 1rem;
-    }
-    .stButton>button {
-        width: 100%;
-        background-color: #1f77b4;
-        color: white;
-    }
-</style>
-""", unsafe_allow_html=True)
+st.title(" Horários TUB")
+st.markdown("Linhas 212, 213, 214, 215 e 216")
 
-# Cabeçalho
-st.markdown('<div class="main-header">🚌 Horários TUB</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-header">Linhas 212, 213, 214, 215 e 216</div>', unsafe_allow_html=True)
-
-# Hora atual
 agora = datetime.now()
 hora_atual = agora.strftime("%H:%M")
-st.info(f"🕒 Hora atual: **{hora_atual}** | {agora.strftime('%d/%m/%Y')}")
+st.info(f"🕒 Hora atual: **{hora_atual}**")
 
 st.markdown("---")
 
-# Instruções rápidas
-with st.expander("📖 Como usar esta app", expanded=False):
-    st.write("""
-    1. **Escolha a linha** que pretende consultar
-    2. **Selecione a paragem** onde vai apanhar o autocarro
-    3. **Escolha a direção** (IDA ou VOLTA)
-    4. **Selecione o tipo de dia** (Dias úteis, Sábados, etc.)
-    
-    A app mostrará automaticamente os próximos horários a partir da hora atual!
-    """)
-
-# ============================================
 # SELEÇÃO DE LINHA
-# ============================================
 st.subheader("1️⃣ Escolha a Linha")
 linhas = get_linhas()
 
@@ -223,22 +170,13 @@ for linha in linhas:
     nome = NOMES_LINHAS.get(linha, linha)
     opcoes_linhas.append(f"{linha} - {nome}")
 
-linha_sel_display = st.selectbox(
-    "Qual linha quer consultar?",
-    opcoes_linhas,
-    label_visibility="collapsed"
-)
-
+linha_sel_display = st.selectbox("Qual linha quer consultar?", opcoes_linhas)
 linha_codigo = linha_sel_display.split(" - ")[0]
 
-# Mostrar info da linha
 st.success(f"**Linha {linha_codigo}:** {NOMES_LINHAS.get(linha_codigo, '')}")
-
 st.markdown("---")
 
-# ============================================
 # SELEÇÃO DE DIREÇÃO
-# ============================================
 st.subheader("2️⃣ Escolha a Direção")
 direcoes = get_direcoes(linha_codigo)
 
@@ -250,36 +188,22 @@ for d in direcoes:
         opcoes_direcao["VOLTA (regresso ao início)"] = "VOLTA"
 
 if len(direcoes) > 1:
-    direcao_sel_display = st.selectbox(
-        "Qual a direção?",
-        list(opcoes_direcao.keys()),
-        label_visibility="collapsed"
-    )
+    direcao_sel_display = st.selectbox("Qual a direção?", list(opcoes_direcao.keys()))
     direcao_sel = opcoes_direcao[direcao_sel_display]
 else:
     direcao_sel = direcoes[0]
-    st.info(f"Direção disponível: {direcao_sel}")
 
 st.markdown("---")
 
-# ============================================
 # SELEÇÃO DE PARAGEM
-# ============================================
 st.subheader("3️⃣ Escolha a Paragem")
 paragens = get_paragens(linha_codigo, direcao_sel)
-
-paragem_sel = st.selectbox(
-    "Onde vai apanhar o autocarro?",
-    paragens,
-    label_visibility="collapsed"
-)
+paragem_sel = st.selectbox("Onde vai apanhar o autocarro?", paragens)
 
 st.markdown("---")
 
-# ============================================
 # SELEÇÃO DE TIPO DE DIA
-# ============================================
-st.subheader("4️ Tipo de Dia")
+st.subheader("4️⃣ Tipo de Dia")
 tipos_dia = get_tipos_dia(linha_codigo, paragem_sel, direcao_sel)
 
 opcoes_tipos = []
@@ -287,78 +211,79 @@ for tipo in tipos_dia:
     descricao = DESCRICOES_TIPOS_DIA.get(tipo, tipo)
     opcoes_tipos.append(f"{tipo} - {descricao}")
 
-tipo_dia_sel_display = st.selectbox(
-    "Que tipo de dia é hoje?",
-    opcoes_tipos,
-    label_visibility="collapsed"
-)
-
+tipo_dia_sel_display = st.selectbox("Que tipo de dia é hoje?", opcoes_tipos)
 tipo_dia_codigo = tipo_dia_sel_display.split(" - ")[0]
 
 st.markdown("---")
 
-# ============================================
 # RESULTADOS
-# ============================================
 st.subheader(f"🕐 Próximos Horários - {paragem_sel}")
 
-# Resumo da pesquisa
 st.markdown(f"""
-<div class="info-box">
+<div style="padding: 1rem; border-radius: 8px; background-color: #f0f2f6; margin-bottom: 1rem;">
     <strong>🚌 Linha:</strong> {linha_codigo} - {NOMES_LINHAS.get(linha_codigo, '')}<br>
     <strong>📍 Paragem:</strong> {paragem_sel}<br>
     <strong>🧭 Direção:</strong> {direcao_sel}<br>
     <strong>📅 Tipo:</strong> {tipo_dia_sel_display}<br>
-    <strong>🕒 A partir das:</strong> {hora_atual}
+    <strong> A partir das:</strong> {hora_atual}
 </div>
 """, unsafe_allow_html=True)
 
-# Obter horários
 resultados = get_horarios(linha_codigo, paragem_sel, direcao_sel, tipo_dia_codigo, hora_atual)
 
 if resultados:
     total_horarios = sum(len(r["horarios"]) for r in resultados)
     st.success(f"✅ Encontrados {total_horarios} horários disponíveis")
     
-    # Criar tabela
-    dados_tabela = []
+    # Criar lista de todos os horários
+    todos_horarios = []
     for r in resultados:
         for hora in r["horarios"]:
-            dados_tabela.append({
-                " Linha": f"{r['linha']} - {NOMES_LINHAS.get(r['linha'], '')}",
-                "🧭 Direção": r["direcao"],
-                "🕐 Hora": hora
+            todos_horarios.append({
+                "linha": r["linha"],
+                "nome_linha": NOMES_LINHAS.get(r["linha"], ""),
+                "direcao": r["direcao"],
+                "hora": hora
             })
     
     # Mostrar tabela
+    dados_tabela = []
+    for h in todos_horarios:
+        dados_tabela.append({
+            "Linha": f"{h['linha']} - {h['nome_linha']}",
+            "Direção": h["direcao"],
+            "Hora": h["hora"]
+        })
+    
     st.table(dados_tabela)
     
-    # Destacar próximos 3 (CORREÇÃO DO ERRO)
-    if len(dados_tabela) >= 1:
+    # Próximas 3 passagens - VERSÃO CORRIGIDA
+    if len(todos_horarios) >= 1:
         st.markdown("### 🎯 Próximas 3 passagens:")
         cols = st.columns(3)
-        for i in range(min(3, len(dados_tabela))):
+        for i in range(min(3, len(todos_horarios))):
             with cols[i]:
+                hora = todos_horarios[i]["hora"]
+                linha = todos_horarios[i]["linha"]
+                direcao = todos_horarios[i]["direcao"]
+                
                 st.markdown(f"""
-                <div style="background-color: #d4edda; padding: 1rem; border-radius: 8px; text-align: center;">
-                    <div style="font-size: 1.5rem; font-weight: bold; color: #155724;">
-                        {dados_tabela[i]['🕐 Hora']}
+                <div style="background-color: #d4edda; padding: 1rem; border-radius: 8px; text-align: center; margin-bottom: 0.5rem;">
+                    <div style="font-size: 2rem; font-weight: bold; color: #155724;">
+                        {hora}
                     </div>
-                    <div style="color: #155724; margin-top: 0.5rem;">
-                        {dados_tabela[i]['🚌 Linha'].split(' - ')[0]}
+                    <div style="color: #155724; font-weight: bold;">
+                        Linha {linha}
                     </div>
                     <div style="font-size: 0.9rem; color: #155724;">
-                        {dados_tabela[i]['🧭 Direção']}
+                        {direcao}
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
 else:
     st.warning(f"⚠️ Não há mais passagens hoje para esta paragem ({tipo_dia_sel_display}) a partir das {hora_atual}.")
-    st.info("💡 Tente consultar outro tipo de dia ou outra paragem.")
+    st.info(" Tente consultar outro tipo de dia ou outra paragem.")
 
-# ============================================
-# RODAPÉ
-# ============================================
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; padding: 1rem; background-color: #fff3cd; border-radius: 8px;">
@@ -366,14 +291,5 @@ st.markdown("""
     Chegue às paragens com <strong>10 minutos de antecedência</strong>.<br>
     Podem ocorrer alterações devido a acidentes, obras ou outros fatores.<br><br>
     <em>📅 Dados de 28/07/2026</em>
-</div>
-""", unsafe_allow_html=True)
-
-# Link para feedback
-st.markdown("""
-<div style="text-align: center; margin-top: 1rem;">
-    <a href="https://horariostub.streamlit.app" target="_blank" style="color: #1f77b4;">
-        🔄 Atualizar página
-    </a>
 </div>
 """, unsafe_allow_html=True)
